@@ -2,10 +2,23 @@ import React, { useState } from "react";
 import "./App.css";
 import styled, { ThemeProvider } from "styled-components";
 import { darkTheme } from "./styles/default-theme";
+import { PostRequest } from "./components";
 
 function App() {
   const [base, setBase] = useState(20000);
-  const [tax, setTax] = useState(30);
+  const [tax, setTax] = useState(300);
+  const [comfirmation, setComfirmation] = useState("");
+
+  const resetComfirmationMessage = () => {
+    setComfirmation("");
+  };
+
+  const postToDatabase = async () => {
+    setComfirmation(
+      await PostRequest(base, tax / 10, Math.floor(base * (1 - tax / 1000)))
+    );
+    setTimeout(resetComfirmationMessage, 5000);
+  };
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -40,8 +53,8 @@ function App() {
               <div className="horizontal-plus" />
             </div>
           </MinusButton>
-          <Paragrahp>tax {tax / 100}%</Paragrahp>
-          <PlusButton onClick={() => (tax >= 55 ? null : setTax(tax + 1))}>
+          <Paragrahp>tax {tax / 10}%</Paragrahp>
+          <PlusButton onClick={() => (tax >= 550 ? null : setTax(tax + 1))}>
             <div className="circle">
               <div className="horizontal-plus" />
               <div className="vertical-plus" />
@@ -53,15 +66,23 @@ function App() {
         </ButtonContainer>
         <ButtonContainer>
           <TextBox>
-            <p>{Math.floor(base * (1 - tax / 100))} kr</p>
+            <p>{Math.floor(base * (1 - tax / 1000))} kr</p>
           </TextBox>
         </ButtonContainer>
+        <SubmitButtonContainer>
+          <SubmitButton onClick={() => postToDatabase()}>
+            Save current search
+          </SubmitButton>
+        </SubmitButtonContainer>
+        <SubmitButtonContainerResponse>
+          {comfirmation === "201" ? "Saved Successfully" : comfirmation}
+        </SubmitButtonContainerResponse>
       </MainScreen>
     </ThemeProvider>
   );
 }
 
-const MainScreen = styled.body`
+const MainScreen = styled.div`
   background-color: ${(props) => props.theme.colors.main};
   width: 100%;
   min-height: 100vh;
@@ -74,6 +95,35 @@ const Title = styled.h1`
   justify-content: center;
   align-items: center;
   min-height: 10vh;
+`;
+
+const SubmitButton = styled.button`
+  min-width: 26vh;
+  background-color: ${(props) => props.theme.colors.secondary};
+  border-color: transparent;
+  border-radius: 20px;
+  color: white;
+  :focus {
+    outline: none;
+  }
+  :active {
+    background-color: ${(props) => props.theme.colors.third};
+  }
+`;
+
+const SubmitButtonContainer = styled.section`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 3vh;
+`;
+
+const SubmitButtonContainerResponse = styled.section`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 3vh;
+  color: white;
 `;
 
 const ButtonContainer = styled.section`

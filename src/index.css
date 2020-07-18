@@ -20,10 +20,6 @@ code {
   background-color: rgb(44, 108, 128)
 }
 
-.circle:active {
-  background-color: #1f4068;
-}
-
 .horizontal-plus {
   position: relative;
   background-color: #FFFFFF;
